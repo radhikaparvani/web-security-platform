@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SecureScope | Web Security Platform</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="{{ url_for('static', filename='script.js') }}" defer></script>
+</head>
+<body>
+    <div class="app-layout">
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="brand-icon">S</div>
+                <div><h2>SecureScope</h2><p>AI Security Platform</p></div>
+            </div>
+            <nav>
+                <a class="nav-link active" href="#dashboard">▦ &nbsp; Dashboard</a>
+                <a class="nav-link" href="#scanner">⌕ &nbsp; Vulnerability Scanner</a>
+                <a class="nav-link" href="#severityChart">▥ &nbsp; Severity Chart</a>
+                <a class="nav-link" href="#findings">⚑ &nbsp; Findings</a>
+                <a class="nav-link" href="#remediation">✦ &nbsp; AI Remediation</a>
+                <a class="nav-link" href="#scanHistory">◷ &nbsp; Scan History</a>
+            </nav>
+            <div class="sidebar-bottom">
+                <span class="status-dot"></span>
+                Local development mode
+                <p>V1 · Authorized lab targets only</p>
+            </div>
+        </aside>
+
+        <main class="main-content" id="dashboard">
+            <header class="topbar">
+                <div>
+                    <p class="eyebrow">SECURITY OPERATIONS</p>
+                    <h1>Dashboard</h1>
+                    <p class="subtitle">Assess your application. Understand risks. Improve security.</p>
+                </div>
+                <div class="backend-status">
+                    <span id="backendDot" class="status-dot"></span>
+                    <span id="backendStatus">Checking backend...</span>
+                </div>
+            </header>
+
+            <section class="welcome-banner">
+                <div>
+                    <span class="pill">AI-ASSISTED SECURITY</span>
+                    <h2>Stay one step ahead of vulnerabilities.</h2>
+                    <p>Run security-header checks, Nuclei templates, and OWASP ZAP passive analysis on an application you are authorized to test.</p>
+                </div>
+                <div class="shield-art">⬡</div>
+            </section>
+
+            <section class="stats-grid">
+                <article class="stat-card"><p>Total Scans</p><h2 id="totalScans">0</h2><span>During this session</span></article>
+                <article class="stat-card"><p>Potential Findings</p><h2 id="totalFindings">0</h2><span>From completed scans</span></article>
+                <article class="stat-card"><p>High Severity</p><h2 id="highFindings">0</h2><span>High and critical findings</span></article>
+                <article class="stat-card"><p>Latest Scan</p><h2 id="latestStatus">—</h2><span>Current scan status</span></article>
+            </section>
+
+            <section class="panel scanner-panel" id="scanner">
+                <div class="section-heading">
+                    <div><p class="eyebrow">ASSESSMENT ENGINE</p><h2>Start a security scan</h2></div>
+                    <span class="pill muted-pill">Headers + Nuclei + ZAP</span>
+                </div>
+                <form id="scanForm">
+                    <label for="targetUrl">Target application URL</label>
+                    <div class="scan-input-row">
+                        <input type="url" id="targetUrl" placeholder="http://127.0.0.1:8081" value="http://127.0.0.1:8081" required>
+                        <button id="scanButton" type="submit">▶ &nbsp; Start Scan</button>
+                    </div>
+                    <fieldset class="scanner-options">
+                        <legend>Choose scanners</legend>
+                        <label><input type="checkbox" name="scanner" value="headers" checked> Security Headers</label>
+                        <label><input type="checkbox" name="scanner" value="nuclei"> Nuclei</label>
+                        <label><input type="checkbox" name="scanner" value="zap"> OWASP ZAP (passive)</label>
+                    </fieldset>
+                    <p id="scannerAvailability" class="help-text">Checking scanner configuration…</p>
+                    <p class="help-text">Only scan systems you own or are authorized to assess. The target must be reachable from the machine running each scanner.</p>
+                </form>
+                <div id="scanMessage" class="message" role="status" aria-live="polite"></div>
+            </section>
+
+            <section class="panel" id="severityChart">
+                <div class="section-heading">
+                    <div><p class="eyebrow">RISK OVERVIEW</p><h2>Vulnerability severity</h2></div>
+                    <span id="chartTotal" class="count-badge">0 findings</span>
+                </div>
+                <p class="subtitle">Severity distribution for the currently displayed scan results.</p>
+                <div id="severityChartBars" class="severity-chart">
+                    <p class="chart-empty">Run a scan to display the severity distribution.</p>
+                </div>
+            </section>
+
+            <section class="panel" id="findings">
+                <div class="section-heading">
+                    <div><p class="eyebrow">SCAN OUTPUT</p><h2>Security findings</h2></div>
+                    <span id="findingCount" class="count-badge">0 findings</span>
+                </div>
+                <div id="findingsList" class="findings-list">
+                    <div class="empty-state"><span>⌕</span><h3>No scan results yet</h3><p>Run your first scan to view potential security issues here.</p></div>
+                </div>
+            </section>
+
+            <section class="panel" id="remediation">
+                <div class="section-heading">
+                    <div><p class="eyebrow">AI SECURITY ASSISTANT</p><h2>Remediation guidance</h2></div>
+                    <span class="pill">AI-assisted</span>
+                </div>
+                <p class="subtitle">Select “Explain with AI” on a finding to get a plain-language explanation, potential impact, verification steps, and a recommended fix.</p>
+                <div id="aiResult" class="ai-result"><p>Your AI remediation guidance will appear here.</p></div>
+            </section>
+
+            <section class="panel" id="scanHistory">
+                <div class="section-heading">
+                    <div><p class="eyebrow">PREVIOUS ASSESSMENTS</p><h2>Scan History</h2></div>
+                    <button type="button" id="refreshHistory">↻ Refresh</button>
+                </div>
+                <p class="subtitle">View previously completed scans saved by SecureScope.</p>
+                <div id="historyMessage" class="message" role="status" aria-live="polite"></div>
+                <div class="history-table-wrapper">
+                    <table class="history-table">
+                        <thead><tr><th>Scan ID</th><th>Target</th><th>Status</th><th>Findings</th><th>Date &amp; Time</th><th>Action</th></tr></thead>
+                        <tbody id="scanHistoryBody"><tr><td colspan="6">Loading scan history...</td></tr></tbody>
+                    </table>
+                </div>
+            </section>
+            <footer>SecureScope · AI-Driven Adaptive Web Application Security Assessment<p>Use only on systems you own or are authorized to assess.</p></footer>
+        </main>
+    </div>
+</body>
+</html>
